@@ -5,8 +5,12 @@ plugins {
     application
 }
 
-group = "org.example"
-version = "1.0-SNAPSHOT"
+version = "1.0"
+
+application {
+    applicationName = "psi-printer"
+    mainClass.set("MainKt")
+}
 
 repositories {
     mavenCentral()
@@ -15,18 +19,32 @@ repositories {
 dependencies {
     implementation(kotlin("compiler-embeddable"))
     implementation("org.jetbrains.kotlinx:kotlinx-cli-jvm:0.3.5")
-
-    testImplementation(kotlin("test"))
-}
-
-tasks.test {
-    useJUnitPlatform()
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-application {
-    mainClass.set("MainKt")
+tasks {
+    val fatJar = register<Jar>("fatJar") {
+        dependsOn.addAll(
+            listOf(
+                "compileJava",
+                "compileKotlin",
+                "processResources"
+            )
+        )
+
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        manifest { attributes(mapOf("Main-Class" to application.mainClass)) }
+        archiveFileName.set(application.applicationName + ".jar")
+        val sourcesMain = sourceSets.main.get()
+        val contents = configurations.runtimeClasspath.get()
+            .map { if (it.isDirectory) it else zipTree(it) } +
+                sourcesMain.output
+        from(contents)
+    }
+    build {
+        dependsOn(fatJar)
+    }
 }
