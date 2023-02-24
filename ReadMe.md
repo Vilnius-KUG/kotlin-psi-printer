@@ -7,13 +7,13 @@ You can run the tool using Gradle
 
 Or build the it and run as a Java app:
 ```
-./gradlew farJar
+./gradlew fatJar
 java -jar build/libs/psi-printer.jar
 ```
 
 ## Options
 
-- `-t ast` value is equivalent to how KtLint traverses the tree
-- `-t kt_visitor` value is equivalent to how Detekt traverses the tree
+- `-t ast` argument is equivalent to how KtLint traverses the tree
+- `-t kt_visitor` argument is equivalent to how Detekt traverses the tree
 
-The full options doc is available via `-h` command.
+The full options doc is available via `-h` option.
